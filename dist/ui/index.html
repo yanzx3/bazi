@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>八字排盘软件 - BaZi Calculator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        h2 {
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        
+        h3 {
+            color: #555;
+            margin-top: 20px;
+        }
+        
+        .input-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+            font-size: 14px;
+        }
+        
+        input, select {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        input:focus, select:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .results {
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .date-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .date-info p {
+            margin: 5px 0;
+        }
+        
+        .date-info .holiday {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .pillars-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .pillar {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            transition: transform 0.2s;
+        }
+        
+        .pillar:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .pillar h3 {
+            margin: 0 0 10px 0;
+            color: #667eea;
+            font-size: 16px;
+        }
+        
+        .pillar .chinese {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #333;
+        }
+        
+        .pillar .element {
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .info-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .info-card h4 {
+            color: #667eea;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .info-card ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .info-card li {
+            margin: 5px 0;
+        }
+        
+        .yi-ji {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .yi {
+            background: #d4edda;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .ji {
+            background: #f8d7da;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .yi h4 {
+            color: #155724;
+            margin-top: 0;
+        }
+        
+        .ji h4 {
+            color: #721c24;
+            margin-top: 0;
+        }
+        
+        .yi ul, .ji ul {
+            margin: 0;
+            padding-left: 15px;
+        }
+        
+        .hour-fortune-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        .hour-fortune-table th,
+        .hour-fortune-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        
+        .hour-fortune-table th {
+            background: #667eea;
+            color: white;
+        }
+        
+        .hour-fortune-table .ji {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .hour-fortune-table .good {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        
+        .solar-term {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .solar-term h4 {
+            color: #1976d2;
+            margin-top: 0;
+        }
+        
+        .solar-term-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        
+        .solar-term-item {
+            background: white;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #bbdefb;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            display: none;
+            font-size: 18px;
+            color: #667eea;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .zodiac-info {
+            display: flex;
+            gap: 30px;
+            margin: 15px 0;
+        }
+        
+        .zodiac-item {
+            text-align: center;
+        }
+        
+        .zodiac-item .label {
+            color: #888;
+            font-size: 12px;
+        }
+        
+        .zodiac-item .value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        @media (max-width: 768px) {
+            .pillars-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .input-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .yi-ji {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .pillars-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>八字排盘软件</h1>
+        
+        <div class="input-section">
+            <div class="form-group">
+                <label for="calendarType">日历类型 Calendar Type</label>
+                <select id="calendarType">
+                    <option value="solar">阳历 Solar Calendar</option>
+                    <option value="lunar">农历 Lunar Calendar</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="year">出生年份 Year</label>
+                <input type="number" id="year" min="1900" max="2100" placeholder="1990" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="month">出生月份 Month</label>
+                <input type="number" id="month" min="1" max="12" placeholder="5" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="day">出生日期 Day</label>
+                <input type="number" id="day" min="1" max="31" placeholder="15" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="hour">出生小时 Hour (0-23)</label>
+                <input type="number" id="hour" min="0" max="23" placeholder="12" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="gender">性别 Gender</label>
+                <select id="gender">
+                    <option value="male">男 Male</option>
+                    <option value="female">女 Female</option>
+                </select>
+            </div>
+            
+            <div class="form-group" id="leapMonthGroup" style="display: none;">
+                <label for="isLeapMonth">闰月 Leap Month</label>
+                <select id="isLeapMonth">
+                    <option value="false">否 No</option>
+                    <option value="true">是 Yes</option>
+                </select>
+            </div>
+        </div>
+        
+        <button id="calculateBtn">计算八字 Calculate BaZi</button>
+        
+        <div class="loading" id="loading">
+            正在计算... Calculating...
+        </div>
+        
+        <div class="error" id="error"></div>
+        
+        <div class="results" id="results">
+            <!-- 日期信息 -->
+            <div class="date-info">
+                <p><strong>公历：</strong><span id="solarDate"></span></p>
+                <p><strong>农历：</strong><span id="lunarDate"></span></p>
+                <p id="holidayInfo" class="holiday" style="display: none;"></p>
+            </div>
+            
+            <!-- 四柱八字 -->
+            <h2>四柱八字 BaZi Chart</h2>
+            <div class="pillars-grid">
+                <div class="pillar">
+                    <h3>年柱 Year Pillar</h3>
+                    <div class="chinese" id="yearPillar"></div>
+                    <div class="element" id="yearElement"></div>
+                </div>
+                <div class="pillar">
+                    <h3>月柱 Month Pillar</h3>
+                    <div class="chinese" id="monthPillar"></div>
+                    <div class="element" id="monthElement"></div>
+                </div>
+                <div class="pillar">
+                    <h3>日柱 Day Pillar</h3>
+                    <div class="chinese" id="dayPillar"></div>
+                    <div class="element" id="dayElement"></div>
+                </div>
+                <div class="pillar">
+                    <h3>时柱 Hour Pillar</h3>
+                    <div class="chinese" id="hourPillar"></div>
+                    <div class="element" id="hourElement"></div>
+                </div>
+            </div>
+            
+            <!-- 日主与五行 -->
+            <div class="info-card">
+                <h4>日主 Day Master</h4>
+                <p id="dayMasterInfo"></p>
+                <h4>五行分布 Five Elements Distribution</h4>
+                <div id="fiveElementsInfo"></div>
+            </div>
+            
+            <!-- 生肖与星座 -->
+            <h2>生肖星座 Zodiac</h2>
+            <div class="zodiac-info">
+                <div class="zodiac-item">
+                    <div class="label">生肖 Chinese Zodiac</div>
+                    <div class="value" id="chineseZodiac"></div>
+                </div>
+                <div class="zodiac-item">
+                    <div class="label">星座 Western Zodiac</div>
+                    <div class="value" id="westernZodiac"></div>
+                </div>
+            </div>
+            
+            <!-- 命理要素 -->
+            <h2>命理要素 Destiny Elements</h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h4>贵人 Nobleman</h4>
+                    <p id="noblemanInfo"></p>
+                </div>
+                <div class="info-card">
+                    <h4>桃花 Peach Blossom</h4>
+                    <p id="peachBlossomInfo"></p>
+                </div>
+                <div class="info-card">
+                    <h4>文昌 Intelligence Star</h4>
+                    <p id="intelligenceStarInfo"></p>
+                </div>
+                <div class="info-card">
+                    <h4>天马 Sky Horse</h4>
+                    <p id="skyHorseInfo"></p>
+                </div>
+            </div>
+            
+            <!-- 节气 -->
+            <h2>节气 Solar Terms</h2>
+            <div class="solar-term" id="currentSolarTerm">
+                <h4>当前节气 Current Solar Term</h4>
+                <p id="currentTermInfo"></p>
+            </div>
+            <div class="solar-term-list" id="solarTermsList"></div>
+            
+            <!-- 黄历宜忌 -->
+            <h2>黄历宜忌 Almanac</h2>
+            <div class="yi-ji">
+                <div class="yi">
+                    <h4>宜 Suitable</h4>
+                    <ul id="yiList"></ul>
+                </div>
+                <div class="ji">
+                    <h4>忌 Avoid</h4>
+                    <ul id="jiList"></ul>
+                </div>
+            </div>
+            
+            <!-- 十二建除 -->
+            <div class="info-card">
+                <h4>十二建除 Jian Chu</h4>
+                <p id="jianChuInfo"></p>
+            </div>
+            
+            <!-- 吉神凶煞 -->
+            <div class="info-grid">
+                <div class="info-card">
+                    <h4>吉神 Auspicious Gods</h4>
+                    <ul id="jiShenList"></ul>
+                </div>
+                <div class="info-card">
+                    <h4>凶神 Inauspicious Gods</h4>
+                    <ul id="xiongShenList"></ul>
+                </div>
+            </div>
+            
+            <!-- 彭祖百忌 -->
+            <div class="info-card">
+                <h4>彭祖百忌 Peng Zu</h4>
+                <ul id="pengZuList"></ul>
+            </div>
+            
+            <!-- 时辰吉凶 -->
+            <h2>时辰吉凶 Hourly Fortune</h2>
+            <table class="hour-fortune-table">
+                <thead>
+                    <tr>
+                        <th>时辰 Hour</th>
+                        <th>时间 Time</th>
+                        <th>吉凶 Fortune</th>
+                    </tr>
+                </thead>
+                <tbody id="hourFortuneTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // 监听日历类型变化
+        document.getElementById('calendarType').addEventListener('change', function() {
+            const leapMonthGroup = document.getElementById('leapMonthGroup');
+            if (this.value === 'lunar') {
+                leapMonthGroup.style.display = 'flex';
+                leapMonthGroup.style.flexDirection = 'column';
+            } else {
+                leapMonthGroup.style.display = 'none';
+            }
+        });
+        
+        document.getElementById('calculateBtn').addEventListener('click', calculateBazi);
+        
+        async function calculateBazi() {
+            const calendarType = document.getElementById('calendarType').value;
+            const year = document.getElementById('year').value;
+            const month = document.getElementById('month').value;
+            const day = document.getElementById('day').value;
+            const hour = document.getElementById('hour').value;
+            const gender = document.getElementById('gender').value;
+            const isLeapMonth = document.getElementById('isLeapMonth').value === 'true';
+            
+            // Validate inputs
+            if (!year || !month || !day || !hour) {
+                showError('请填写所有必填字段 / Please fill in all required fields');
+                return;
+            }
+            
+            const loading = document.getElementById('loading');
+            const errorDiv = document.getElementById('error');
+            const resultsDiv = document.getElementById('results');
+            
+            // Hide previous results and errors
+            errorDiv.style.display = 'none';
+            resultsDiv.style.display = 'none';
+            loading.style.display = 'block';
+            
+            try {
+                const response = await fetch('http://localhost:3002/api/calculate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        calendarType: calendarType,
+                        year: parseInt(year),
+                        month: parseInt(month),
+                        day: parseInt(day),
+                        hour: parseInt(hour),
+                        gender: gender,
+                        isLeapMonth: calendarType === 'lunar' ? isLeapMonth : false
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayResults(data.data);
+                    resultsDiv.style.display = 'block';
+                } else {
+                    showError(data.error || '计算失败 / Calculation failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('无法连接到服务器 / Failed to connect to server');
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+        
+        function displayResults(result) {
+            // 日期信息
+            document.getElementById('solarDate').textContent = result.solarDate.formatted;
+            document.getElementById('lunarDate').textContent = result.lunarDate.formatted;
+            
+            // 节日
+            const holidayInfo = document.getElementById('holidayInfo');
+            if (result.holiday) {
+                holidayInfo.textContent = '🎉 ' + result.holiday;
+                holidayInfo.style.display = 'block';
+            } else {
+                holidayInfo.style.display = 'none';
+            }
+            
+            // 四柱
+            document.getElementById('yearPillar').textContent = result.yearPillar.full;
+            document.getElementById('monthPillar').textContent = result.monthPillar.full;
+            document.getElementById('dayPillar').textContent = result.dayPillar.full;
+            document.getElementById('hourPillar').textContent = result.hourPillar.full;
+            
+            document.getElementById('yearElement').textContent = `${result.yearPillar.stem}(${result.yearPillar.element}) ${result.yearPillar.branch}(${getBranchElement(result.yearPillar.branch)})`;
+            document.getElementById('monthElement').textContent = `${result.monthPillar.stem}(${result.monthPillar.element}) ${result.monthPillar.branch}(${getBranchElement(result.monthPillar.branch)})`;
+            document.getElementById('dayElement').textContent = `${result.dayPillar.stem}(${result.dayPillar.element}) ${result.dayPillar.branch}(${getBranchElement(result.dayPillar.branch)})`;
+            document.getElementById('hourElement').textContent = `${result.hourPillar.stem}(${result.hourPillar.element}) ${result.hourPillar.branch}(${getBranchElement(result.hourPillar.branch)})`;
+            
+            // 日主
+            document.getElementById('dayMasterInfo').innerHTML = 
+                `<strong>${result.dayMaster.gan}</strong> (${result.dayMaster.element}，${result.dayMaster.nature})`;
+            
+            // 五行分布
+            const fe = result.fiveElementsDistribution;
+            document.getElementById('fiveElementsInfo').innerHTML = `
+                <div style="display: flex; gap: 20px; margin-top: 10px;">
+                    <span style="color: #2ecc71;">木: ${fe['木'] || 0}</span>
+                    <span style="color: #e74c3c;">火: ${fe['火'] || 0}</span>
+                    <span style="color: #f39c12;">土: ${fe['土'] || 0}</span>
+                    <span style="color: #95a5a6;">金: ${fe['金'] || 0}</span>
+                    <span style="color: #3498db;">水: ${fe['水'] || 0}</span>
+                </div>
+            `;
+            
+            // 生肖星座
+            document.getElementById('chineseZodiac').textContent = result.zodiac.chineseZodiac;
+            document.getElementById('westernZodiac').textContent = result.zodiac.westernZodiac;
+            
+            // 命理要素
+            document.getElementById('noblemanInfo').textContent = result.nobleman.join('、');
+            document.getElementById('peachBlossomInfo').textContent = result.peachBlossom;
+            document.getElementById('intelligenceStarInfo').textContent = result.intelligenceStar;
+            document.getElementById('skyHorseInfo').textContent = result.skyHorse;
+            
+            // 节气
+            const currentTerm = result.currentSolarTerm;
+            document.getElementById('currentTermInfo').textContent = 
+                currentTerm ? `${currentTerm.name} (${formatDate(currentTerm.date)})` : '无';
+            
+            const solarTermsList = document.getElementById('solarTermsList');
+            solarTermsList.innerHTML = result.solarTerms.map(term => `
+                <div class="solar-term-item">
+                    <strong>${term.name}</strong><br>
+                    ${formatDate(term.date)}
+                </div>
+            `).join('');
+            
+            // 黄历宜忌
+            const yiList = document.getElementById('yiList');
+            yiList.innerHTML = result.huangli.yi.length > 0 
+                ? result.huangli.yi.map(item => `<li>${item}</li>`).join('')
+                : '<li>无</li>';
+            
+            const jiList = document.getElementById('jiList');
+            jiList.innerHTML = result.huangli.ji.length > 0 
+                ? result.huangli.ji.map(item => `<li>${item}</li>`).join('')
+                : '<li>无</li>';
+            
+            // 十二建除
+            document.getElementById('jianChuInfo').textContent = result.huangli.jianChu || '无';
+            
+            // 吉神凶煞
+            const jiShenList = document.getElementById('jiShenList');
+            jiShenList.innerHTML = result.huangli.jiShen.length > 0 
+                ? result.huangli.jiShen.map(item => `<li>${item}</li>`).join('')
+                : '<li>无</li>';
+            
+            const xiongShenList = document.getElementById('xiongShenList');
+            xiongShenList.innerHTML = result.huangli.xiongShen.length > 0 
+                ? result.huangli.xiongShen.map(item => `<li>${item}</li>`).join('')
+                : '<li>无</li>';
+            
+            // 彭祖百忌
+            const pengZuList = document.getElementById('pengZuList');
+            pengZuList.innerHTML = result.huangli.pengZu.length > 0 
+                ? result.huangli.pengZu.map(item => `<li>${item}</li>`).join('')
+                : '<li>无</li>';
+            
+            // 时辰吉凶
+            const hourFortuneTable = document.getElementById('hourFortuneTable');
+            hourFortuneTable.innerHTML = result.huangli.hourFortune.map(hf => `
+                <tr>
+                    <td>${hf.hour}</td>
+                    <td>${hf.timeRange}</td>
+                    <td class="${hf.fortune === '吉' ? 'good' : 'ji'}">${hf.fortune}</td>
+                </tr>
+            `).join('');
+        }
+        
+        function getBranchElement(branch) {
+            const elements = {
+                '子': '水', '丑': '土', '寅': '木', '卯': '木',
+                '辰': '土', '巳': '火', '午': '火', '未': '土',
+                '申': '金', '酉': '金', '戌': '土', '亥': '水'
+            };
+            return elements[branch] || '';
+        }
+        
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return `${date.getMonth() + 1}月${date.getDate()}日`;
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
