@@ -18,8 +18,8 @@ AI专用API对接平台 - 八字排盘与小工具
 
 ## 在线演示
 
-- **Web界面**: https://223.4.250.128:10443/
-- **API端点**: https://223.4.250.128:10443/api/calculate
+- **Web界面**: https://www.ai2api.uk
+- **API端点**: https://www.ai2api.uk/api/calculate
 
 ## API 文档
 
